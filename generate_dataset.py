@@ -526,9 +526,6 @@ def flush_batch(conn, pat_rows, test_rows, res_rows, risk_rows, notif_rows):
     conn.commit()
     cur.close()
 
-
-
-
 # ─── Xulosa statistikasi ──────────────────────────────────────────────────────
 
 def print_stats(conn):
