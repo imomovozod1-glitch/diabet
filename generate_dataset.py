@@ -209,18 +209,33 @@ def generate_biomarkers(status: str, age: int, gender: str, bmi: float) -> dict:
         "ADIPO": round(adipo, 2),
     }
 
-    # Shovqin qo'shish
-    noise_pct = {
-        "HBA1C": 0.18, "FBG": 0.22, "PPG": 0.25,
-        "FINS": 0.30, "HOMAIR": 0.32, "BMI": 0.10,
-        "WAIST": 0.12, "SBP": 0.14, "DBP": 0.14,
-        "TCHOL": 0.18, "HDL": 0.22, "LDL": 0.22,
-        "TG": 0.25, "TGHDL": 0.25, "CRP": 0.38,
-        "CREAT": 0.18, "EGFR": 0.22, "ADIPO": 0.30,
-    }
+    # 1-bosqich: nisbiy shovqin
     for code in list(bmarks.keys()):
-        extra_noise = rng.uniform(-0.45, 0.45)
-        bmarks[code] = round(bmarks[code] * (1 + extra_noise), 2)
+        bmarks[code] = round(bmarks[code] * (1 + rng.uniform(-0.45, 0.45)), 2)
+
+    # 2-bosqich: klasslar farqidan 2-3x katta qo'shimcha absolut shovqin —
+    # secondary featurelarning signal/noise nisbatini nolga yaqinlashtiradi.
+    # HbA1c/FBG/PPG shu ro'yxatda yo'q: ular label manbai, o'zgartirmaymiz.
+    WASHOUT = {
+        "FINS":   20.0,   # class diff ~2,  noise ~10x
+        "HOMAIR":  5.0,   # class diff ~1.8, noise ~2.8x
+        "BMI":    10.0,   # class diff ~3,  noise ~3x
+        "WAIST":  24.0,   # class diff ~8,  noise ~3x
+        "SBP":    32.0,   # class diff ~12, noise ~2.7x
+        "DBP":    24.0,   # class diff ~7,  noise ~3.4x
+        "TCHOL":  80.0,   # class diff ~37, noise ~2.2x
+        "HDL":    25.0,   # class diff ~6,  noise ~4x
+        "LDL":    58.0,   # class diff ~20, noise ~2.9x
+        "TG":    115.0,   # class diff ~60, noise ~1.9x
+        "TGHDL":   2.8,   # class diff ~0.5, noise ~5.6x
+        "CRP":     7.5,   # class diff ~2.7, noise ~2.8x
+        "CREAT":   0.6,   # class diff ~0.3, noise ~2x
+        "EGFR":   35.0,   # class diff ~14, noise ~2.5x
+        "ADIPO":  10.0,   # class diff ~2,  noise ~5x
+    }
+    for code, w in WASHOUT.items():
+        if code in bmarks:
+            bmarks[code] = round(bmarks[code] + float(rng.uniform(-w, w)), 2)
 
     return bmarks
 
@@ -413,7 +428,7 @@ def generate_all(conn):
         #   - Barcha boshqa featurelar (BMI ham!) → qo'shni statusdan
         # Natijada model ko'radigan featurelar label bilan mos kelmaydi.
         _adj = {"healthy": "prediabetes", "prediabetes": "diabetes", "diabetes": "prediabetes"}
-        if rng.random() < 0.45:
+        if rng.random() < 0.55:
             bmi_adj         = generate_bmi(_adj[status])
             bmarks_label    = generate_biomarkers(status,       age, gender, bmi)
             bmarks_features = generate_biomarkers(_adj[status], age, gender, bmi_adj)
