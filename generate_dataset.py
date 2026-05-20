@@ -132,59 +132,59 @@ def generate_biomarkers(status: str, age: int, gender: str, bmi: float) -> dict:
     male_factor = 0.05 if gender == "male" else 0.0
 
     if status == "healthy":
-        hba1c     = _norm(5.1, 0.35, 4.0,  5.6)
-        glucose   = _norm(88,  8.0,  70,   99)
-        ppg       = _norm(110, 15,   80,   139)
-        insulin   = _norm(10,  4.0,  2.6,  20)
-        homa_ir   = _norm(1.5, 0.6,  0.3,  2.5)
-        hdl       = _norm(55,  10,   40,   90)   if gender=="male" else _norm(62, 10, 45, 95)
-        ldl       = _norm(105, 22,   60,   129)
-        tg        = _norm(110, 30,   50,   149)
-        tchol     = _norm(175, 25,   140,  199)
-        crp       = _norm(0.5, 0.3,  0.01, 0.99)
-        creat     = _norm(0.9, 0.15, 0.6,  1.19) if gender=="male" else _norm(0.75,0.12,0.5,0.99)
-        egfr      = _norm(90,  12,   65,   120)
-        sbp       = _norm(115, 10,   90,   119)
-        dbp       = _norm(72,  7,    60,   79)
-        adipo     = _norm(14,  4,    6,    28)
-        waist     = _norm(82,  8,    65,   93)  if gender=="male" else _norm(75,7,58,87)
+        hba1c     = _norm(5.2, 0.60, 4.0,  6.2)
+        glucose   = _norm(90,  14.0, 68,   118)
+        ppg       = _norm(115, 25,   75,   155)
+        insulin   = _norm(11,  6.0,  2.0,  28)
+        homa_ir   = _norm(1.7, 0.9,  0.2,  3.5)
+        hdl       = _norm(53,  13,   35,   95)   if gender=="male" else _norm(60, 13, 38, 98)
+        ldl       = _norm(108, 30,   55,   145)
+        tg        = _norm(118, 45,   45,   175)
+        tchol     = _norm(178, 35,   130,  220)
+        crp       = _norm(0.7, 0.5,  0.01, 2.5)
+        creat     = _norm(0.9, 0.22, 0.55, 1.35) if gender=="male" else _norm(0.76,0.18,0.45,1.1)
+        egfr      = _norm(88,  16,   55,   125)
+        sbp       = _norm(116, 14,   88,   135)
+        dbp       = _norm(73,  10,   58,   88)
+        adipo     = _norm(13,  5,    5,    28)
+        waist     = _norm(84,  11,   62,   105) if gender=="male" else _norm(77,10,55,98)
 
     elif status == "prediabetes":
-        hba1c     = _norm(6.0 + age_factor + bmi_factor, 0.22, 5.7,  6.4)
-        glucose   = _norm(108, 8.0,  100,  125)
-        ppg       = _norm(155, 15,   140,  199)
-        insulin   = _norm(18,  5.0,  8,    35)
-        homa_ir   = _norm(3.0, 0.7,  2.5,  4.5)
-        hdl       = _norm(46,  9,    35,   65)   if gender=="male" else _norm(52, 9, 38, 70)
-        ldl       = _norm(128, 25,   90,   159)
-        tg        = _norm(165, 40,   100,  249)
-        tchol     = _norm(210, 28,   170,  239)
-        crp       = _norm(1.8, 0.8,  0.5,  4.9)
-        creat     = _norm(1.0, 0.18, 0.7,  1.3)  if gender=="male" else _norm(0.85,0.15,0.6,1.1)
-        egfr      = _norm(80,  14,   55,   100)
-        sbp       = _norm(128, 10,   115,  139)
-        dbp       = _norm(80,  8,    75,   89)
-        adipo     = _norm(9,   3,    4,    16)
-        waist     = _norm(96,  8,    80,   109) if gender=="male" else _norm(88,8,74,100)
+        hba1c     = _norm(5.9 + age_factor + bmi_factor, 0.50, 5.2,  7.0)
+        glucose   = _norm(106, 16.0, 88,   140)
+        ppg       = _norm(150, 30,   120,  210)
+        insulin   = _norm(17,  7.0,  6,    40)
+        homa_ir   = _norm(2.8, 1.0,  1.5,  5.5)
+        hdl       = _norm(47,  12,   30,   70)   if gender=="male" else _norm(53, 12, 33, 75)
+        ldl       = _norm(126, 32,   80,   170)
+        tg        = _norm(162, 55,   85,   280)
+        tchol     = _norm(208, 38,   155,  255)
+        crp       = _norm(2.0, 1.2,  0.3,  6.5)
+        creat     = _norm(1.0, 0.25, 0.65, 1.45) if gender=="male" else _norm(0.86,0.22,0.55,1.2)
+        egfr      = _norm(79,  18,   45,   108)
+        sbp       = _norm(127, 14,   108,  148)
+        dbp       = _norm(80,  11,   68,   96)
+        adipo     = _norm(9.5, 4,    3,    20)
+        waist     = _norm(95,  12,   75,   118) if gender=="male" else _norm(87,11,68,108)
 
     else:  # diabetes
-        severity  = rng.uniform(0, 1)   # 0=yengil, 1=og'ir
-        hba1c     = _norm(8.5 + severity * 2 + age_factor + bmi_factor, 0.8, 6.5, 14.0)
-        glucose   = _norm(180 + severity * 80, 30, 126, 400)
-        ppg       = _norm(280 + severity * 60, 40, 200, 500)
-        insulin   = _norm(8,   5.0,  1,    30)   # insulin qarshiligi tufayli past
-        homa_ir   = _norm(5.5, 1.5,  2.5,  12)
-        hdl       = _norm(40,  9,    28,   55)   if gender=="male" else _norm(46, 8, 32, 60)
-        ldl       = _norm(145, 32,   90,   220)
-        tg        = _norm(230, 70,   150,  500)
-        tchol     = _norm(235, 35,   180,  320)
-        crp       = _norm(4.0, 2.0,  1.0,  12)
-        creat     = _norm(1.15,0.3,  0.8,  2.5)  if gender=="male" else _norm(0.95,0.25,0.7,2.0)
-        egfr      = _norm(65,  18,   30,   90)
-        sbp       = _norm(142, 14,   120,  180)
-        dbp       = _norm(88,  10,   80,   110)
-        adipo     = _norm(6,   2.5,  2,    12)
-        waist     = _norm(104, 10,   88,   130) if gender=="male" else _norm(96,9,82,120)
+        severity  = rng.uniform(0, 1)
+        hba1c     = _norm(7.8 + severity * 2 + age_factor + bmi_factor, 1.5, 5.8, 14.0)
+        glucose   = _norm(165 + severity * 80, 50, 110, 400)
+        ppg       = _norm(260 + severity * 60, 65, 165, 500)
+        insulin   = _norm(9,   6.5,  1,    35)
+        homa_ir   = _norm(5.0, 2.0,  1.5,  13)
+        hdl       = _norm(41,  12,   24,   62)   if gender=="male" else _norm(47, 11, 28, 68)
+        ldl       = _norm(142, 40,   78,   230)
+        tg        = _norm(220, 85,   120,  500)
+        tchol     = _norm(230, 45,   165,  330)
+        crp       = _norm(4.2, 2.5,  0.5,  13)
+        creat     = _norm(1.18,0.40, 0.7,  2.8)  if gender=="male" else _norm(0.97,0.35,0.6,2.2)
+        egfr      = _norm(67,  22,   25,   98)
+        sbp       = _norm(140, 18,   112,  185)
+        dbp       = _norm(87,  13,   72,   115)
+        adipo     = _norm(6.5, 3.5,  1.5,  16)
+        waist     = _norm(102, 14,   82,   135) if gender=="male" else _norm(94,13,76,125)
 
     tg_hdl = round(tg / hdl, 3)
 
@@ -211,16 +211,16 @@ def generate_biomarkers(status: str, age: int, gender: str, bmi: float) -> dict:
 
     # Shovqin qo'shish
     noise_pct = {
-        "HBA1C": 0.08, "FBG": 0.10, "PPG": 0.12,
-        "FINS": 0.15, "HOMAIR": 0.18, "BMI": 0.04,
-        "WAIST": 0.05, "SBP": 0.06, "DBP": 0.06,
-        "TCHOL": 0.08, "HDL": 0.10, "LDL": 0.10,
-        "TG": 0.12, "TGHDL": 0.12, "CRP": 0.20,
-        "CREAT": 0.08, "EGFR": 0.10, "ADIPO": 0.15,
+        "HBA1C": 0.18, "FBG": 0.22, "PPG": 0.25,
+        "FINS": 0.30, "HOMAIR": 0.32, "BMI": 0.10,
+        "WAIST": 0.12, "SBP": 0.14, "DBP": 0.14,
+        "TCHOL": 0.18, "HDL": 0.22, "LDL": 0.22,
+        "TG": 0.25, "TGHDL": 0.25, "CRP": 0.38,
+        "CREAT": 0.18, "EGFR": 0.22, "ADIPO": 0.30,
     }
     for code in list(bmarks.keys()):
-        pct = noise_pct.get(code, 0.10)
-        bmarks[code] = round(bmarks[code] * (1 + rng.uniform(-pct, pct)), 2)
+        extra_noise = rng.uniform(-0.45, 0.45)
+        bmarks[code] = round(bmarks[code] * (1 + extra_noise), 2)
 
     return bmarks
 
@@ -261,7 +261,7 @@ def risk_level_from_status(status: str, bmarks: dict) -> tuple[str, float]:
     score += base[status]
 
     # Kuchli shovqin — labellar aralashsin
-    score += float(rng.uniform(-0.20, 0.20))
+    score += float(rng.uniform(-0.32, 0.32))
     score = float(np.clip(score, 0.01, 0.98))
 
     if score < 0.25:   level = "very_low"
