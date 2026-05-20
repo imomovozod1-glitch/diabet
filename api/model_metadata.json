@@ -1,0 +1,62 @@
+{
+  "version": "v4.0",
+  "algorithm": "XGBoost",
+  "trained_at": "2026-05-20T06:53:25.943588",
+  "feature_cols": [
+    "age",
+    "gender_num",
+    "family_history",
+    "fasting_insulin",
+    "homa_ir",
+    "bmi",
+    "waist_cm",
+    "systolic_bp",
+    "diastolic_bp",
+    "total_cholesterol",
+    "hdl",
+    "ldl",
+    "triglycerides",
+    "tg_hdl_ratio",
+    "crp",
+    "creatinine",
+    "egfr",
+    "adiponectin"
+  ],
+  "hba1c_thresholds": {
+    "prediabetes": 5.7,
+    "diabetes": 6.5
+  },
+  "risk_names": {
+    "0": "healthy",
+    "1": "prediabetes",
+    "2": "diabetes"
+  },
+  "metrics": {
+    "accuracy": 0.9172,
+    "f1_score": 0.9021,
+    "auc_roc": 0.8321,
+    "cv_mean": 0.9194,
+    "cv_std": 0.0019
+  },
+  "feature_importance": {
+    "crp": 0.414172,
+    "homa_ir": 0.257823,
+    "systolic_bp": 0.054568,
+    "fasting_insulin": 0.037557,
+    "tg_hdl_ratio": 0.031387,
+    "triglycerides": 0.030464,
+    "total_cholesterol": 0.022891,
+    "diastolic_bp": 0.019413,
+    "ldl": 0.015812,
+    "waist_cm": 0.01551,
+    "adiponectin": 0.015416,
+    "bmi": 0.015097,
+    "age": 0.014824,
+    "hdl": 0.014047,
+    "gender_num": 0.013959,
+    "egfr": 0.013947,
+    "creatinine": 0.013112,
+    "family_history": 0.0
+  },
+  "note": "Label HbA1c ADA mezoniga qarab. HbA1c/FBG/PPG feature dan chiqarildi."
+}

@@ -1,0 +1,19 @@
+[2026-05-13T12:08:21.170+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-05-13T12:08:21.498+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: diabetes_pipeline.generate_patients scheduled__2026-05-13T11:00:00+00:00 [queued]>
+[2026-05-13T12:08:21.520+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: diabetes_pipeline.generate_patients scheduled__2026-05-13T11:00:00+00:00 [queued]>
+[2026-05-13T12:08:21.521+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 3
+[2026-05-13T12:08:21.540+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): generate_patients> on 2026-05-13 11:00:00+00:00
+[2026-05-13T12:08:21.550+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'diabetes_pipeline', 'generate_patients', 'scheduled__2026-05-13T11:00:00+00:00', '--job-id', '7', '--raw', '--subdir', 'DAGS_FOLDER/diabetes_dag.py', '--cfg-path', '/tmp/tmproxoobh1']
+[2026-05-13T12:08:21.553+0000] {standard_task_runner.py:91} INFO - Job 7: Subtask generate_patients
+[2026-05-13T12:08:21.553+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/task/task_runner/standard_task_runner.py:61 DeprecationWarning: This process (pid=287) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2026-05-13T12:08:21.554+0000] {standard_task_runner.py:63} INFO - Started process 288 to run task
+[2026-05-13T12:08:21.613+0000] {task_command.py:426} INFO - Running <TaskInstance: diabetes_pipeline.generate_patients scheduled__2026-05-13T11:00:00+00:00 [running]> on host 2d3a07f73229
+[2026-05-13T12:08:21.704+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='diabetes_team' AIRFLOW_CTX_DAG_ID='diabetes_pipeline' AIRFLOW_CTX_TASK_ID='generate_patients' AIRFLOW_CTX_EXECUTION_DATE='2026-05-13T11:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2026-05-13T11:00:00+00:00'
+[2026-05-13T12:08:21.705+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-05-13T12:08:21.840+0000] {logging_mixin.py:188} INFO - [OK] 10 ta yangi bemor yaratildi
+[2026-05-13T12:08:21.865+0000] {python.py:237} INFO - Done. Returned value was: ['030db319-7405-450a-9302-c429cb28cddb', '678ff041-b23d-47aa-8a6c-23cae3ee2f2d', 'fa87141d-7425-45d7-84c4-14ad263da7dc', '75ba114d-22cc-4c17-b10d-41ebdd1bb4fc', '6d571d1a-18e7-4a45-89c6-f1d4459949bd', '955035b9-5876-4d70-a77b-79e8a5e4c1da', 'cef6bf12-5884-4b46-a578-8edc21e9b548', 'c69d4c36-2418-4283-a086-95078e440f3d', '8d0cdbe0-443d-4cb2-9371-e907761e1c96', '819fe28d-5374-4ea4-b800-5ba717ca05e0']
+[2026-05-13T12:08:21.866+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-05-13T12:08:21.918+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=diabetes_pipeline, task_id=generate_patients, run_id=scheduled__2026-05-13T11:00:00+00:00, execution_date=20260513T110000, start_date=20260513T120821, end_date=20260513T120821
+[2026-05-13T12:08:21.970+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-05-13T12:08:21.998+0000] {taskinstance.py:3498} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2026-05-13T12:08:22.002+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

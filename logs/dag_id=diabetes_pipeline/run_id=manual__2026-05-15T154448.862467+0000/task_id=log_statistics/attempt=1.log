@@ -1,0 +1,31 @@
+[2026-05-15T15:44:53.551+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-05-15T15:44:53.604+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: diabetes_pipeline.log_statistics manual__2026-05-15T15:44:48.862467+00:00 [queued]>
+[2026-05-15T15:44:53.618+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: diabetes_pipeline.log_statistics manual__2026-05-15T15:44:48.862467+00:00 [queued]>
+[2026-05-15T15:44:53.620+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 3
+[2026-05-15T15:44:53.638+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): log_statistics> on 2026-05-15 15:44:48.862467+00:00
+[2026-05-15T15:44:53.649+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'diabetes_pipeline', 'log_statistics', 'manual__2026-05-15T15:44:48.862467+00:00', '--job-id', '84', '--raw', '--subdir', 'DAGS_FOLDER/diabetes_dag.py', '--cfg-path', '/tmp/tmpkr2ieyrv']
+[2026-05-15T15:44:53.655+0000] {standard_task_runner.py:91} INFO - Job 84: Subtask log_statistics
+[2026-05-15T15:44:53.655+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/task/task_runner/standard_task_runner.py:61 DeprecationWarning: This process (pid=486) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2026-05-15T15:44:53.657+0000] {standard_task_runner.py:63} INFO - Started process 487 to run task
+[2026-05-15T15:44:53.775+0000] {task_command.py:426} INFO - Running <TaskInstance: diabetes_pipeline.log_statistics manual__2026-05-15T15:44:48.862467+00:00 [running]> on host c24284f8ebf4
+[2026-05-15T15:44:53.982+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='diabetes_team' AIRFLOW_CTX_DAG_ID='diabetes_pipeline' AIRFLOW_CTX_TASK_ID='log_statistics' AIRFLOW_CTX_EXECUTION_DATE='2026-05-15T15:44:48.862467+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-05-15T15:44:48.862467+00:00'
+[2026-05-15T15:44:53.984+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-05-15T15:44:54.056+0000] {logging_mixin.py:188} INFO - ==================================================
+[2026-05-15T15:44:54.063+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/utils/context.py:320 AirflowContextDeprecationWarning: Accessing 'execution_date' from the template is deprecated and will be removed in a future version. Please use 'data_interval_start' or 'logical_date' instead.
+[2026-05-15T15:44:54.064+0000] {logging_mixin.py:188} INFO -   Run vaqti    : 2026-05-15 15:44:48.862467+00:00
+[2026-05-15T15:44:54.066+0000] {logging_mixin.py:188} INFO -   Jami bemorlar: 50,008
+[2026-05-15T15:44:54.068+0000] {logging_mixin.py:188} INFO -   Jami risk    : 50,008
+[2026-05-15T15:44:54.069+0000] {logging_mixin.py:188} INFO -   Yuborilmagan : 3950 notification
+[2026-05-15T15:44:54.070+0000] {logging_mixin.py:188} INFO -   Risk taqsimoti:
+[2026-05-15T15:44:54.071+0000] {logging_mixin.py:188} INFO -     low          23,556
+[2026-05-15T15:44:54.073+0000] {logging_mixin.py:188} INFO -     very_low     20,302
+[2026-05-15T15:44:54.074+0000] {logging_mixin.py:188} INFO -     very_high     3,833
+[2026-05-15T15:44:54.075+0000] {logging_mixin.py:188} INFO -     moderate      2,200
+[2026-05-15T15:44:54.076+0000] {logging_mixin.py:188} INFO -     high            117
+[2026-05-15T15:44:54.077+0000] {logging_mixin.py:188} INFO - ==================================================
+[2026-05-15T15:44:54.078+0000] {python.py:237} INFO - Done. Returned value was: None
+[2026-05-15T15:44:54.079+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-05-15T15:44:54.095+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=diabetes_pipeline, task_id=log_statistics, run_id=manual__2026-05-15T15:44:48.862467+00:00, execution_date=20260515T154448, start_date=20260515T154453, end_date=20260515T154454
+[2026-05-15T15:44:54.156+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-05-15T15:44:54.186+0000] {taskinstance.py:3498} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-05-15T15:44:54.191+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

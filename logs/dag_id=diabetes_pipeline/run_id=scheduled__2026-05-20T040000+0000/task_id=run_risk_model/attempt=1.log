@@ -1,0 +1,19 @@
+[2026-05-20T05:54:31.907+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-05-20T05:54:31.933+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: diabetes_pipeline.run_risk_model scheduled__2026-05-20T04:00:00+00:00 [queued]>
+[2026-05-20T05:54:31.940+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: diabetes_pipeline.run_risk_model scheduled__2026-05-20T04:00:00+00:00 [queued]>
+[2026-05-20T05:54:31.942+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 3
+[2026-05-20T05:54:31.951+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): run_risk_model> on 2026-05-20 04:00:00+00:00
+[2026-05-20T05:54:31.956+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'diabetes_pipeline', 'run_risk_model', 'scheduled__2026-05-20T04:00:00+00:00', '--job-id', '106', '--raw', '--subdir', 'DAGS_FOLDER/diabetes_dag.py', '--cfg-path', '/tmp/tmpg6jmck1d']
+[2026-05-20T05:54:31.958+0000] {standard_task_runner.py:91} INFO - Job 106: Subtask run_risk_model
+[2026-05-20T05:54:31.958+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/task/task_runner/standard_task_runner.py:61 DeprecationWarning: This process (pid=179) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2026-05-20T05:54:31.959+0000] {standard_task_runner.py:63} INFO - Started process 180 to run task
+[2026-05-20T05:54:32.017+0000] {task_command.py:426} INFO - Running <TaskInstance: diabetes_pipeline.run_risk_model scheduled__2026-05-20T04:00:00+00:00 [running]> on host 84fa0012a2fe
+[2026-05-20T05:54:32.090+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='diabetes_team' AIRFLOW_CTX_DAG_ID='diabetes_pipeline' AIRFLOW_CTX_TASK_ID='run_risk_model' AIRFLOW_CTX_EXECUTION_DATE='2026-05-20T04:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2026-05-20T04:00:00+00:00'
+[2026-05-20T05:54:32.091+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-05-20T05:54:32.130+0000] {logging_mixin.py:188} INFO - [OK] 1 ta risk baholash yakunlandi
+[2026-05-20T05:54:32.143+0000] {python.py:237} INFO - Done. Returned value was: ['8b9e2949-ad9f-4df2-b869-37f08be98aa0']
+[2026-05-20T05:54:32.144+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-05-20T05:54:32.163+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=diabetes_pipeline, task_id=run_risk_model, run_id=scheduled__2026-05-20T04:00:00+00:00, execution_date=20260520T040000, start_date=20260520T055431, end_date=20260520T055432
+[2026-05-20T05:54:32.214+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-05-20T05:54:32.238+0000] {taskinstance.py:3498} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2026-05-20T05:54:32.242+0000] {local_task_job_runner.py:222} INFO - ::endgroup::
