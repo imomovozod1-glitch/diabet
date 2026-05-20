@@ -135,56 +135,56 @@ def generate_biomarkers(status: str, age: int, gender: str, bmi: float) -> dict:
         hba1c     = _norm(5.3, 0.90, 4.0,  7.5)
         glucose   = _norm(92,  22.0, 65,   145)
         ppg       = _norm(118, 35,   72,   175)
-        insulin   = _norm(11,  7.0,  2.0,  32)
-        homa_ir   = _norm(1.8, 1.1,  0.2,  4.5)
-        hdl       = _norm(52,  15,   28,   98)   if gender=="male" else _norm(59, 15, 30, 102)
-        ldl       = _norm(110, 35,   50,   162)
-        tg        = _norm(122, 55,   42,   210)
-        tchol     = _norm(180, 42,   120,  248)
-        crp       = _norm(0.8, 0.7,  0.01, 4.0)
-        creat     = _norm(0.91,0.26, 0.50, 1.55) if gender=="male" else _norm(0.77,0.22,0.42,1.25)
-        egfr      = _norm(87,  20,   48,   128)
-        sbp       = _norm(117, 18,   85,   148)
-        dbp       = _norm(74,  12,   55,   96)
-        adipo     = _norm(12,  6,    4,    30)
-        waist     = _norm(85,  14,   58,   115) if gender=="male" else _norm(78,13,52,108)
+        insulin   = _norm(12,  8.0,  2.0,  38)
+        homa_ir   = _norm(2.0, 1.5,  0.2,  6.0)
+        hdl       = _norm(50,  16,   24,   98)   if gender=="male" else _norm(57, 16, 26, 102)
+        ldl       = _norm(112, 40,   45,   175)
+        tg        = _norm(130, 70,   38,   260)
+        tchol     = _norm(182, 48,   115,  268)
+        crp       = _norm(1.2, 1.2,  0.01, 6.0)
+        creat     = _norm(0.92,0.30, 0.48, 1.65) if gender=="male" else _norm(0.78,0.26,0.40,1.35)
+        egfr      = _norm(85,  22,   42,   130)
+        sbp       = _norm(120, 22,   82,   158)
+        dbp       = _norm(76,  14,   52,   102)
+        adipo     = _norm(11,  7,    3,    30)
+        waist     = _norm(88,  16,   55,   122) if gender=="male" else _norm(81,15,48,115)
 
     elif status == "prediabetes":
         hba1c     = _norm(6.0 + age_factor + bmi_factor, 1.0, 4.5,  8.5)
         glucose   = _norm(108, 26.0, 72,   168)
         ppg       = _norm(152, 42,   105,  230)
-        insulin   = _norm(17,  8.5,  4,    45)
-        homa_ir   = _norm(2.9, 1.4,  0.8,  6.5)
-        hdl       = _norm(47,  14,   26,   78)   if gender=="male" else _norm(53, 14, 28, 84)
-        ldl       = _norm(128, 38,   72,   188)
-        tg        = _norm(165, 68,   72,   320)
-        tchol     = _norm(210, 46,   145,  278)
-        crp       = _norm(2.1, 1.6,  0.2,  8.0)
-        creat     = _norm(1.01,0.30, 0.58, 1.62) if gender=="male" else _norm(0.87,0.26,0.48,1.35)
-        egfr      = _norm(78,  22,   38,   115)
-        sbp       = _norm(128, 18,   100,  158)
-        dbp       = _norm(81,  14,   62,   102)
-        adipo     = _norm(9.5, 5,    2.5,  22)
-        waist     = _norm(96,  15,   68,   128) if gender=="male" else _norm(88,14,62,118)
+        insulin   = _norm(16,  9.0,  3,    48)
+        homa_ir   = _norm(3.0, 1.8,  0.5,  7.5)
+        hdl       = _norm(46,  16,   22,   82)   if gender=="male" else _norm(52, 16, 24, 88)
+        ldl       = _norm(128, 42,   65,   200)
+        tg        = _norm(168, 82,   65,   360)
+        tchol     = _norm(212, 52,   138,  295)
+        crp       = _norm(2.2, 1.8,  0.1,  9.0)
+        creat     = _norm(1.02,0.34, 0.55, 1.75) if gender=="male" else _norm(0.88,0.30,0.45,1.48)
+        egfr      = _norm(77,  24,   32,   118)
+        sbp       = _norm(128, 22,   95,   165)
+        dbp       = _norm(82,  16,   58,   108)
+        adipo     = _norm(9.0, 6,    2.0,  24)
+        waist     = _norm(96,  18,   62,   132) if gender=="male" else _norm(88,17,55,122)
 
     else:  # diabetes
         severity  = rng.uniform(0, 1)
         hba1c     = _norm(7.2 + severity * 2 + age_factor + bmi_factor, 1.8, 4.5, 14.0)
         glucose   = _norm(148 + severity * 75, 55, 82, 400)
         ppg       = _norm(240 + severity * 65, 72, 145, 500)
-        insulin   = _norm(9.5, 7.5,  1,    40)
-        homa_ir   = _norm(4.8, 2.2,  0.8,  14)
-        hdl       = _norm(42,  14,   20,   68)   if gender=="male" else _norm(48, 13, 22, 75)
-        ldl       = _norm(140, 46,   68,   238)
-        tg        = _norm(215, 95,   95,   500)
-        tchol     = _norm(228, 52,   148,  340)
-        crp       = _norm(4.5, 3.0,  0.3,  14)
-        creat     = _norm(1.20,0.45, 0.62, 3.0)  if gender=="male" else _norm(0.99,0.40,0.55,2.4)
-        egfr      = _norm(68,  25,   20,   105)
-        sbp       = _norm(138, 22,   105,  188)
-        dbp       = _norm(86,  15,   65,   118)
-        adipo     = _norm(7.0, 4.5,  1.2,  18)
-        waist     = _norm(100, 17,   75,   138) if gender=="male" else _norm(92,16,68,128)
+        insulin   = _norm(10,  9.0,  1,    45)
+        homa_ir   = _norm(4.5, 2.5,  0.5,  14)
+        hdl       = _norm(43,  16,   18,   72)   if gender=="male" else _norm(49, 15, 20, 78)
+        ldl       = _norm(138, 48,   60,   248)
+        tg        = _norm(210, 100,  82,   500)
+        tchol     = _norm(226, 58,   138,  355)
+        crp       = _norm(4.5, 3.2,  0.2,  15)
+        creat     = _norm(1.22,0.50, 0.58, 3.2)  if gender=="male" else _norm(1.00,0.44,0.50,2.6)
+        egfr      = _norm(68,  28,   18,   108)
+        sbp       = _norm(136, 26,   98,   192)
+        dbp       = _norm(85,  18,   60,   122)
+        adipo     = _norm(7.5, 5.5,  1.0,  20)
+        waist     = _norm(100, 20,   70,   142) if gender=="male" else _norm(92,19,62,132)
 
     tg_hdl = round(tg / hdl, 3)
 
@@ -409,11 +409,20 @@ def generate_all(conn):
         # ── Biomarkerlar ──────────────────────────────────────────────────────
         bmi    = generate_bmi(status)
 
-        # Label noise: 22% holatda qo'shni klassdan biomarker generatsiya qilinadi,
-        # lekin bemor labeli o'zgarmaydi — bu modelni chalkashtirib qo'yadi
-        _noise_map = {"healthy": "prediabetes", "prediabetes": "healthy", "diabetes": "prediabetes"}
-        gen_status = _noise_map[status] if rng.random() < 0.22 else status
-        bmarks = generate_biomarkers(gen_status, age, gender, bmi)
+        # Haqiqiy label noise:
+        #   - HbA1c/FBG/PPG → original statusdan (train_model.py label shu 3 tadan oladi)
+        #   - Qolgan barcha featurelar → qo'shni statusdan (model ko'radigan featurelar)
+        # Natijada label va featurelar o'rtasida haqiqiy ziddiyat paydo bo'ladi.
+        _adj = {"healthy": "prediabetes", "prediabetes": "diabetes", "diabetes": "prediabetes"}
+        if rng.random() < 0.30:
+            bmarks_label    = generate_biomarkers(status,       age, gender, bmi)
+            bmarks_features = generate_biomarkers(_adj[status], age, gender, bmi)
+            bmarks = bmarks_features
+            bmarks["HBA1C"] = bmarks_label["HBA1C"]
+            bmarks["FBG"]   = bmarks_label["FBG"]
+            bmarks["PPG"]   = bmarks_label["PPG"]
+        else:
+            bmarks = generate_biomarkers(status, age, gender, bmi)
 
         for code, val in bmarks.items():
             bm_id = BIOMARKER_IDS.get(code)
