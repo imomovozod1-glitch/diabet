@@ -92,7 +92,8 @@ app = FastAPI(
 # React frontend uchun CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000",
+                   "http://localhost:3001", "http://127.0.0.1:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -122,6 +123,8 @@ class PredictRequest(BaseModel):
     age: int = Field(..., ge=1, le=120, example=45)
     gender: str = Field(..., example="male")
     bmi: float = Field(..., ge=10, le=70, example=28.5)
+    hba1c:            Optional[float] = Field(None, ge=3.0, le=20.0, example=5.8)
+    fasting_glucose:  Optional[float] = Field(None, ge=40, le=600, example=108)
     homa_ir:          Optional[float] = Field(None, example=3.1)
     fasting_insulin:  Optional[float] = Field(None, example=18.0)
     waist_cm:         Optional[float] = Field(None, example=96.0)
@@ -190,11 +193,16 @@ def calc_risk(data: PredictRequest) -> dict:
 
     # ── ML model mavjud bo'lsa ────────────────────────────────────────────────
     if ML_MODEL is not None:
-        X_arr   = np.array([X])
-        pred    = int(ML_MODEL.predict(X_arr)[0])
-        proba   = ML_MODEL.predict_proba(X_arr)[0]
-        score   = float(proba[pred])
-        level   = RISK_NAMES[pred]
+        X_arr = np.array([X])
+        proba = ML_MODEL.predict_proba(X_arr)[0]
+        # Risk score = prediabetes yoki diabetes ehtimolligi
+        score = round(float(proba[1] + proba[2]), 4)
+
+        if score < 0.15:   level = "very_low"
+        elif score < 0.30: level = "low"
+        elif score < 0.50: level = "moderate"
+        elif score < 0.70: level = "high"
+        else:              level = "very_high"
 
         # Feature importance dan top omillar
         try:
@@ -202,9 +210,9 @@ def calc_risk(data: PredictRequest) -> dict:
             top_idx = np.argsort(fi)[::-1][:5]
             top_factors = [
                 {
-                    "name":   FEATURE_LABELS.get(ML_FEATURE_COLS[i], ML_FEATURE_COLS[i]),
+                    "name":   ML_FEATURE_COLS[i],
                     "value":  round(X[i], 2),
-                    "impact": "yuqori" if fi[i] > 0.1 else "o'rta" if fi[i] > 0.03 else "past",
+                    "impact": "yuqori" if fi[i] > 0.1 else "orta" if fi[i] > 0.03 else "past",
                     "weight": round(float(fi[i]), 4),
                 }
                 for i in top_idx
@@ -214,25 +222,39 @@ def calc_risk(data: PredictRequest) -> dict:
 
     # ── Model yo'q — rule-based ───────────────────────────────────────────────
     else:
-        homa   = feature_values["homa_ir"] or FEATURE_MEDIANS["homa_ir"]
-        bmi_v  = data.bmi
-        crp_v  = feature_values["crp"] or FEATURE_MEDIANS["crp"]
-        score  = min(0.98, round(
-            (max(0, homa - 1.5) * 0.12) +
-            (max(0, bmi_v - 25) * 0.015) +
-            (max(0, crp_v - 1.0) * 0.04) +
-            (0.05 if data.family_history else 0), 4
-        ))
-        if score < 0.15:   level = "healthy"
-        elif score < 0.40: level = "prediabetes"
-        else:              level = "diabetes"
+        if data.hba1c:
+            h = data.hba1c
+            if h >= 6.5:
+                score = round(min(0.95, 0.70 + (h - 6.5) * 0.05), 4)
+            elif h >= 5.7:
+                score = round(0.30 + (h - 5.7) * 0.50, 4)
+            else:
+                score = round(max(0.02, (h - 4.0) * 0.08), 4)
+        else:
+            homa  = feature_values["homa_ir"] or FEATURE_MEDIANS["homa_ir"]
+            bmi_v = data.bmi
+            crp_v = feature_values["crp"] or FEATURE_MEDIANS["crp"]
+            score = round(min(0.95,
+                (max(0, homa - 1.5) * 0.12) +
+                (max(0, bmi_v - 25) * 0.015) +
+                (max(0, crp_v - 1.0) * 0.04) +
+                (0.05 if data.family_history else 0)
+            ), 4)
+
+        if score < 0.15:   level = "very_low"
+        elif score < 0.30: level = "low"
+        elif score < 0.50: level = "moderate"
+        elif score < 0.70: level = "high"
+        else:              level = "very_high"
         top_factors = []
 
     # Tavsiya
     rec_map = {
-        "healthy": "Yiliga 1 marta profilaktik tekshiruv tavsiya etiladi.",
-        "prediabetes": "Turmush tarzini o'zgartirish va 3 oyda 1 marta tekshiruv.",
-        "diabetes": "Zudlik bilan endokrinolog ko'rigi va davolanish zarur.",
+        "very_low":  "Har 2-3 yilda bir profilaktik tekshiruv tavsiya etiladi.",
+        "low":       "Yiliga bir marta profilaktik tekshiruv tavsiya etiladi.",
+        "moderate":  "Turmush tarzini yaxshilash va 6 oyda 1 marta tekshiruv zarur.",
+        "high":      "Endokrinolog ko'rigi va 3 oyda 1 marta tekshiruv zarur.",
+        "very_high": "Zudlik bilan endokrinolog ko'rigi va davolanishni boshlash zarur.",
     }
 
     return {
@@ -457,7 +479,7 @@ def get_risk(patient_id: str):
 def predict(data: PredictRequest):
     """
     Yangi bemor ma'lumotlari asosida diabet xavfini bashorat qiladi.
-    Minimal talab: age, gender, hba1c, fasting_glucose, bmi.
+    Minimal talab: age, gender, bmi. hba1c va fasting_glucose ixtiyoriy, lekin tavsiya etiladi.
     """
     result = calc_risk(data)
     return PredictResponse(**result)
