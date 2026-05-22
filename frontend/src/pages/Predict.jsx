@@ -1,10 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { api } from '../api';
-
-const RISK_LABELS = {
-  very_low: 'Juda past', low: 'Past', moderate: "O'rta",
-  high: 'Yuqori', very_high: 'Juda yuqori',
-};
+import { useLang } from '../i18n';
 
 const RISK_COLORS = {
   very_low: 'var(--green)', low: 'var(--accent)',
@@ -12,6 +8,8 @@ const RISK_COLORS = {
 };
 
 export default function Predict() {
+  const { t } = useLang();
+
   const [form, setForm] = useState({
     age: '', gender: 'male',
     hba1c: '', fasting_glucose: '', bmi: '',
@@ -30,61 +28,66 @@ export default function Predict() {
   const handleSubmit = () => {
     setError(null);
     if (!form.age || !form.hba1c || !form.fasting_glucose || !form.bmi) {
-      setError("Majburiy maydonlarni to'ldiring: Yosh, HbA1c, Glucose, BMI");
+      setError(t('predict.requiredError'));
       return;
     }
     const payload = {
-      age:              Number(form.age),
-      gender:           form.gender,
-      hba1c:            Number(form.hba1c),
-      fasting_glucose:  Number(form.fasting_glucose),
-      bmi:              Number(form.bmi),
-      family_history:   form.family_history,
-      ...(form.systolic_bp    && { systolic_bp:   Number(form.systolic_bp) }),
-      ...(form.diastolic_bp   && { diastolic_bp:  Number(form.diastolic_bp) }),
-      ...(form.triglycerides  && { triglycerides: Number(form.triglycerides) }),
-      ...(form.hdl            && { hdl:           Number(form.hdl) }),
-      ...(form.homa_ir        && { homa_ir:       Number(form.homa_ir) }),
-      ...(form.crp            && { crp:           Number(form.crp) }),
+      age:             Number(form.age),
+      gender:          form.gender,
+      hba1c:           Number(form.hba1c),
+      fasting_glucose: Number(form.fasting_glucose),
+      bmi:             Number(form.bmi),
+      family_history:  form.family_history,
+      ...(form.systolic_bp   && { systolic_bp:   Number(form.systolic_bp) }),
+      ...(form.diastolic_bp  && { diastolic_bp:  Number(form.diastolic_bp) }),
+      ...(form.triglycerides && { triglycerides: Number(form.triglycerides) }),
+      ...(form.hdl           && { hdl:           Number(form.hdl) }),
+      ...(form.homa_ir       && { homa_ir:       Number(form.homa_ir) }),
+      ...(form.crp           && { crp:           Number(form.crp) }),
     };
     setLoading(true);
     api.predict(payload)
       .then(r => setResult(r.data))
-      .catch(() => setError("API xatosi. FastAPI ishlamoqdami?"))
+      .catch(() => setError(t('predict.apiError')))
       .finally(() => setLoading(false));
+  };
+
+  // Normalize API impact key → CSS class + i18n key
+  const impactKey = (raw) => {
+    if (raw === 'yuqori') return 'yuqori';
+    if (raw === 'orta')   return 'orta';
+    return 'past';
   };
 
   return (
     <>
       <div className="page-header">
-        <h2>Diabet xavfini bashorat qilish</h2>
-        <p>Bemor tahlil natijalarini kiriting</p>
+        <h2>{t('predict.title')}</h2>
+        <p>{t('predict.subtitle')}</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'start' }}>
 
         {/* Form */}
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 16 }}>Bemor ma'lumotlari</div>
+          <div className="card-title" style={{ marginBottom: 16 }}>{t('predict.formTitle')}</div>
 
           <div className="form-grid">
             <div className="form-group">
-              <label>Yosh *</label>
+              <label>{t('predict.age')} *</label>
               <input type="number" placeholder="45" value={form.age}
                 onChange={e => set('age', e.target.value)} min={1} max={120} />
             </div>
             <div className="form-group">
-              <label>Jins *</label>
+              <label>{t('predict.gender')} *</label>
               <select value={form.gender} onChange={e => set('gender', e.target.value)}>
-                <option value="male">Erkak</option>
-                <option value="female">Ayol</option>
+                <option value="male">{t('common.male')}</option>
+                <option value="female">{t('common.female')}</option>
               </select>
             </div>
           </div>
 
-          <div style={{ margin: '14px 0 4px', fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', fontWeight: 600 }}>
-            Asosiy ko'rsatkichlar *
-          </div>
+          <div className="section-label">{t('predict.mainIndicators')}</div>
           <div className="form-grid" style={{ marginBottom: 14 }}>
             <div className="form-group">
               <label>HbA1c (%)</label>
@@ -108,22 +111,20 @@ export default function Predict() {
             </div>
           </div>
 
-          <div style={{ margin: '0 0 4px', fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', fontWeight: 600 }}>
-            Qo'shimcha ko'rsatkichlar (ixtiyoriy)
-          </div>
+          <div className="section-label">{t('predict.additionalIndicators')}</div>
           <div className="form-grid" style={{ marginBottom: 14 }}>
             <div className="form-group">
-              <label>Sistolik BP (mmHg)</label>
+              <label>Systolic BP (mmHg)</label>
               <input type="number" placeholder="128"
                 value={form.systolic_bp} onChange={e => set('systolic_bp', e.target.value)} />
             </div>
             <div className="form-group">
-              <label>Diastolik BP (mmHg)</label>
+              <label>Diastolic BP (mmHg)</label>
               <input type="number" placeholder="82"
                 value={form.diastolic_bp} onChange={e => set('diastolic_bp', e.target.value)} />
             </div>
             <div className="form-group">
-              <label>Trigliseridlar (mg/dL)</label>
+              <label>Triglycerides (mg/dL)</label>
               <input type="number" placeholder="165"
                 value={form.triglycerides} onChange={e => set('triglycerides', e.target.value)} />
             </div>
@@ -138,20 +139,24 @@ export default function Predict() {
                 value={form.crp} onChange={e => set('crp', e.target.value)} />
             </div>
             <div className="form-group" style={{ justifyContent: 'flex-end' }}>
-              <label>Oilaviy tarix</label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-                background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 7,
-                padding: '9px 12px', fontSize: 13.5 }}>
+              <label>{t('predict.familyHistory')}</label>
+              <label style={{
+                display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
+                background: 'var(--bg3)', border: '1px solid var(--border)',
+                borderRadius: 7, padding: '9px 12px', fontSize: 13.5,
+              }}>
                 <input type="checkbox" checked={form.family_history}
                   onChange={e => set('family_history', e.target.checked)} />
-                Oilada diabet bor
+                {t('predict.familyDiabetes')}
               </label>
             </div>
           </div>
 
           {error && (
-            <div style={{ background: 'rgba(248,81,73,0.1)', border: '1px solid rgba(248,81,73,0.3)',
-              borderRadius: 7, padding: '10px 14px', fontSize: 13, color: 'var(--red)', marginBottom: 14 }}>
+            <div style={{
+              background: 'rgba(248,81,73,0.1)', border: '1px solid rgba(248,81,73,0.3)',
+              borderRadius: 7, padding: '10px 14px', fontSize: 13, color: 'var(--red)', marginBottom: 14,
+            }}>
               ⚠ {error}
             </div>
           )}
@@ -162,7 +167,7 @@ export default function Predict() {
             onClick={handleSubmit}
             disabled={loading}
           >
-            {loading ? 'Hisoblanmoqda...' : '🔬 Xavfni baholash'}
+            {loading ? t('predict.calculating') : t('predict.submit')}
           </button>
         </div>
 
@@ -172,52 +177,50 @@ export default function Predict() {
             <div className="card" style={{ textAlign: 'center', padding: '40px 24px' }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🩺</div>
               <p style={{ color: 'var(--text3)', fontSize: 13.5 }}>
-                Ma'lumotlarni kiriting va<br />natijani ko'ring
+                {t('predict.placeholderTitle')}<br />{t('predict.placeholderSub')}
               </p>
             </div>
           ) : (
             <div className="result-card">
-              {/* Asosiy natija */}
               <div style={{ textAlign: 'center', marginBottom: 24 }}>
                 <div className="risk-score-big" style={{ color: RISK_COLORS[result.risk_level] }}>
                   {(result.risk_score * 100).toFixed(1)}%
                 </div>
                 <div style={{ marginTop: 10 }}>
                   <span className={`risk-badge risk-${result.risk_level}`} style={{ fontSize: 13 }}>
-                    {RISK_LABELS[result.risk_level]}
+                    {t(`risk.${result.risk_level}`)}
                   </span>
                 </div>
               </div>
 
-              {/* Tavsiya */}
               <div style={{
                 background: 'var(--bg3)', borderRadius: 8, padding: '12px 16px',
                 marginBottom: 20, fontSize: 13.5, lineHeight: 1.7,
                 borderLeft: `3px solid ${RISK_COLORS[result.risk_level]}`,
               }}>
-                {result.recommendation}
+                {t(`predict.recs.${result.risk_level}`)}
               </div>
 
-              {/* Top omillar */}
               {result.top_factors?.length > 0 && (
                 <>
-                  <div className="card-title" style={{ marginBottom: 8 }}>Ta'sir qilgan omillar</div>
-                  {result.top_factors.map((f, i) => (
-                    <div key={i} className="factor-bar">
-                      <span className="factor-name">{f.name}</span>
-                      <span style={{ fontSize: 13, fontFamily: 'DM Mono, monospace',
-                        color: 'var(--text2)', marginRight: 8 }}>
-                        {typeof f.value === 'number' ? f.value.toFixed(1) : f.value}
-                      </span>
-                      <span className={`factor-impact impact-${f.impact.replace("'", "")}`}>
-                        {f.impact}
-                      </span>
-                      <div className="bar-track">
-                        <div className="bar-fill"
-                          style={{ width: `${Math.min(f.weight * 300, 100)}%` }} />
+                  <div className="card-title" style={{ marginBottom: 8 }}>{t('predict.topFactors')}</div>
+                  {result.top_factors.map((f, i) => {
+                    const ik = impactKey(f.impact);
+                    return (
+                      <div key={i} className="factor-bar">
+                        <span className="factor-name">{t(`features.${f.name}`)}</span>
+                        <span style={{ fontSize: 13, fontFamily: 'DM Mono, monospace', color: 'var(--text2)', marginRight: 8 }}>
+                          {typeof f.value === 'number' ? f.value.toFixed(1) : f.value}
+                        </span>
+                        <span className={`factor-impact impact-${ik}`}>
+                          {t(`predict.impact.${ik}`)}
+                        </span>
+                        <div className="bar-track">
+                          <div className="bar-fill" style={{ width: `${Math.min(f.weight * 300, 100)}%` }} />
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </>
               )}
 
@@ -226,7 +229,7 @@ export default function Predict() {
                 style={{ width: '100%', marginTop: 16 }}
                 onClick={() => setResult(null)}
               >
-                Yangi tekshiruv
+                {t('predict.newExam')}
               </button>
             </div>
           )}
