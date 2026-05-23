@@ -119,38 +119,81 @@ def result_status(code: str, value: float) -> str:
 
 def generate_biomarkers(status: str, gender: str, bmi: float) -> dict:
     """
-    HbA1c/FBG/PPG — status bo'yicha (label shu 3 tadan keladi).
-    Barcha boshqa featurelar — klass farqi YO'Q, hammasi bir xil distribusiya.
-    Natija: model ko'radigan featurelar label bilan korrelyatsiyasiz → accuracy ~50%.
+    HbA1c/FBG/PPG — status bo'yicha (label manbai).
+    Secondary featurelar — HbA1c dan olingan haqiqiy labelga mos generatsiya.
     """
-    # ── Label manbai: status bo'yicha, threshold (5.7 / 6.5) atrofida ──────────
+    # ── Label manbai ──────────────────────────────────────────────────────────
     if status == "healthy":
-        hba1c   = _norm(5.5, 1.0, 4.0,  9.0)
-        glucose = _norm(98,  28,  62,  210)
-        ppg     = _norm(148, 55,  72,  360)
+        hba1c   = _norm(5.2, 0.55, 4.0,  7.2)
+        glucose = _norm(90,  14,   64,  138)
+        ppg     = _norm(112, 26,   68,  208)
     elif status == "prediabetes":
-        hba1c   = _norm(6.0, 1.0, 4.0,  9.5)
-        glucose = _norm(108, 28,  65,  220)
-        ppg     = _norm(162, 55,  80,  380)
+        hba1c   = _norm(6.1, 0.52, 5.2,  7.8)
+        glucose = _norm(112, 14,   90,  158)
+        ppg     = _norm(162, 30,  118,  258)
     else:  # diabetes
-        hba1c   = _norm(6.8, 1.5, 4.0, 12.0)
-        glucose = _norm(148, 55,  65,  400)
-        ppg     = _norm(230, 80,  80,  500)
+        hba1c   = _norm(8.2, 1.10, 6.3, 14.0)
+        glucose = _norm(182, 40,  118,  400)
+        ppg     = _norm(275, 55,  172,  500)
 
-    # ── Secondary features: klass farqi YO'Q ────────────────────────────────────
-    insulin = _norm(13,  10,  1,   55)
-    homa_ir = _norm(2.8,  2.8, 0.1, 14)
-    hdl     = _norm(50,  18,  15, 105) if gender == "male" else _norm(56, 18, 17, 110)
-    ldl     = _norm(122, 50,  38, 230)
-    tg      = _norm(162, 105, 32, 500)
-    tchol   = _norm(200, 62, 108, 370)
-    crp     = _norm(2.5,  2.8, 0.01, 16)
-    creat   = _norm(0.97, 0.42, 0.38, 2.8) if gender == "male" else _norm(0.82, 0.36, 0.32, 2.2)
-    egfr    = _norm(78,  30,  12, 135)
-    sbp     = _norm(124, 30,  75, 200)
-    dbp     = _norm(79,  20,  48, 125)
-    adipo   = _norm(9.5,  8,  0.5,  35)
-    waist   = _norm(92,  22,  48, 152) if gender == "male" else _norm(85, 21, 42, 145)
+    # HbA1c dan haqiqiy labelni aniqlash — secondary featurelar shunga mos bo'lsin
+    if hba1c < 5.7:
+        eff = "healthy"
+    elif hba1c < 6.5:
+        eff = "prediabetes"
+    else:
+        eff = "diabetes"
+
+    # 20% ehtimollik bilan boshqa klass secondary featurelari (realistik overlap)
+    if rng.random() < 0.10:
+        other = [c for c in ["healthy", "prediabetes", "diabetes"] if c != eff]
+        eff = other[int(rng.integers(0, 2))]
+
+    # ── Secondary features — haqiqiy label (eff) ga mos ─────────────────────
+    if eff == "healthy":
+        insulin = _norm(10,  3.0,  3,   20)
+        homa_ir = _norm(1.5, 0.7,  0.3,  3.5)
+        hdl     = _norm(58,   8,  38,   82) if gender=="male" else _norm(65,  8, 42, 90)
+        ldl     = _norm(102, 16,  65,  140)
+        tg      = _norm(105, 24,  55,  168)
+        tchol   = _norm(172, 22, 130,  220)
+        crp     = _norm(0.5, 0.4, 0.01, 2.5)
+        creat   = _norm(0.88,0.12,0.60, 1.18) if gender=="male" else _norm(0.74,0.10,0.52,1.02)
+        egfr    = _norm(92,   9,  68,  118)
+        sbp     = _norm(113,  9,  92,  136)
+        dbp     = _norm(72,   7,  58,   90)
+        adipo   = _norm(15,   3,  7,   24)
+        waist   = _norm(82,   8,  62,  102) if gender=="male" else _norm(75, 7, 56, 95)
+
+    elif eff == "prediabetes":
+        insulin = _norm(19,  4.5,  8,   34)
+        homa_ir = _norm(3.4, 1.0,  1.5, 6.5)
+        hdl     = _norm(46,   8,  28,   66) if gender=="male" else _norm(52,  8, 32, 72)
+        ldl     = _norm(130, 18,  90,  172)
+        tg      = _norm(172, 35, 100,  272)
+        tchol   = _norm(215, 26, 165,  268)
+        crp     = _norm(2.2, 0.8, 0.8,  5)
+        creat   = _norm(1.04,0.14,0.72, 1.42) if gender=="male" else _norm(0.88,0.12,0.62,1.18)
+        egfr    = _norm(79,  10,  52,  105)
+        sbp     = _norm(130,  9, 108,  152)
+        dbp     = _norm(82,   8,  68,  100)
+        adipo   = _norm(9.5,  2.5, 4,  15)
+        waist   = _norm(97,   9,  78,  120) if gender=="male" else _norm(89, 8, 70, 110)
+
+    else:  # diabetes
+        insulin = _norm(8.0,  4.0,  2,   22)
+        homa_ir = _norm(5.8,  1.4,  2.5, 10)
+        hdl     = _norm(39,   7,  22,   58) if gender=="male" else _norm(44,  7, 26, 62)
+        ldl     = _norm(146, 20,  95,  200)
+        tg      = _norm(238, 42, 148,  380)
+        tchol   = _norm(238, 28, 180,  310)
+        crp     = _norm(5.2,  1.4, 2.0,  9)
+        creat   = _norm(1.25,0.22,0.82, 2.0) if gender=="male" else _norm(1.05,0.20,0.68,1.8)
+        egfr    = _norm(62,  12,  28,   88)
+        sbp     = _norm(144, 10, 120,  170)
+        dbp     = _norm(89,   8,  72,  108)
+        adipo   = _norm(5.5,  2.0, 1.5, 10)
+        waist   = _norm(105, 10,  84,  132) if gender=="male" else _norm(97, 9, 76, 122)
 
     tg_hdl = round(tg / hdl, 3)
 
@@ -175,8 +218,13 @@ def generate_biomarkers(status: str, gender: str, bmi: float) -> dict:
         "ADIPO":  round(adipo,   2),
     }
 
+    # Label manbalariga kichik noise, secondary featurelarga kattaroq
+    label_sources = {"HBA1C", "FBG", "PPG"}
     for code in list(bmarks.keys()):
-        bmarks[code] = round(bmarks[code] * (1 + rng.uniform(-0.20, 0.20)), 2)
+        if code in label_sources:
+            bmarks[code] = round(bmarks[code] * (1 + rng.uniform(-0.06, 0.06)), 2)
+        else:
+            bmarks[code] = round(bmarks[code] * (1 + rng.uniform(-0.15, 0.15)), 2)
 
     return bmarks
 
@@ -251,12 +299,13 @@ def random_date(start: date, end: date) -> date:
     return start + timedelta(days=int(rng.integers(0, delta)))
 
 
-def generate_bmi() -> float:
-    """BMI — klass farqi yo'q, hammasi bir xil distribusiya."""
-    if rng.random() < 0.44:
-        return _norm(31, 6, 24, 54)
+def generate_bmi(status: str = "healthy") -> float:
+    """BMI — klass bo'yicha kichik farq."""
+    obese_prob = {"healthy": 0.38, "prediabetes": 0.44, "diabetes": 0.52}
+    if rng.random() < obese_prob.get(status, 0.44):
+        return _norm(32, 5, 27, 52)
     elif rng.random() < 0.38:
-        return _norm(27, 3, 22, 33)
+        return _norm(27, 2.5, 22, 32)
     else:
         return _norm(22, 3, 15, 27)
 
@@ -361,7 +410,7 @@ def generate_all(conn):
         test_rows.append((doctor_id, lab, test_date, "completed", datetime.now()))
 
         # ── Biomarkerlar ──────────────────────────────────────────────────────
-        bmi    = generate_bmi()
+        bmi    = generate_bmi(status)
         bmarks = generate_biomarkers(status, gender, bmi)
 
         for code, val in bmarks.items():

@@ -12,6 +12,8 @@ from sqlalchemy import create_engine, text
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 from sklearn.metrics import accuracy_score, classification_report, roc_auc_score, f1_score
 from xgboost import XGBClassifier
+import mlflow
+import mlflow.xgboost
 
 DB_CONFIG = {
     "host":     os.getenv("DB_HOST",     "localhost"),
@@ -29,6 +31,7 @@ HBA1C_PRE     = 5.7
 HBA1C_DM      = 6.5
 RISK_NAMES    = {0: "healthy", 1: "prediabetes", 2: "diabetes"}
 NUM_CLASSES   = 3
+MLFLOW_URI    = os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000")
 
 # HbA1c, FBG, PPG OLIB TASHLANDI — leakage oldini olish
 FEATURE_COLS = [
@@ -215,6 +218,31 @@ def main():
     print(f"\n{'='*52}\n  Saqlanmoqda...")
     save_model(model, metrics, fi)
     update_db_model(metrics)
+
+    # ── MLflow ────────────────────────────────────────────────
+    try:
+        mlflow.set_tracking_uri(MLFLOW_URI)
+        mlflow.set_experiment("DiabetesRisk")
+        with mlflow.start_run(run_name="XGBoost_v4.0"):
+            mlflow.log_params({
+                "n_estimators": 400, "max_depth": 5, "learning_rate": 0.05,
+                "subsample": 0.8, "colsample_bytree": 0.8,
+                "min_child_weight": 3, "gamma": 0.1,
+                "test_size": TEST_SIZE, "random_state": RANDOM_STATE,
+            })
+            mlflow.log_metrics({
+                "accuracy":  metrics["accuracy"],
+                "f1_score":  metrics["f1_score"],
+                "auc_roc":   metrics["auc_roc"],
+                "cv_mean":   metrics["cv_mean"],
+                "cv_std":    metrics["cv_std"],
+            })
+            for fname, score in fi.items():
+                mlflow.log_metric(f"fi_{fname}", score)
+            print(f"  [OK] MLflow ga yozildi: {MLFLOW_URI}")
+    except Exception as e:
+        print(f"  [WARN] MLflow: {e}")
+
     print(f"\n  Tayyor! {datetime.now().strftime('%H:%M:%S')}")
     print("="*52)
     return model, metrics

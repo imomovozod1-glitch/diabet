@@ -12,12 +12,16 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
   SELECT 'CREATE DATABASE diabetes_risk'
     WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'diabetes_risk')\gexec
 
+  SELECT 'CREATE DATABASE mlflow'
+    WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'mlflow')\gexec
+
   ALTER USER postgres WITH PASSWORD 'postgres';
   GRANT ALL PRIVILEGES ON DATABASE airflow TO postgres;
   GRANT ALL PRIVILEGES ON DATABASE diabetes_risk TO postgres;
+  GRANT ALL PRIVILEGES ON DATABASE mlflow TO postgres;
 EOSQL
 
-echo "Databases created: airflow, diabetes_risk"
+echo "Databases created: airflow, diabetes_risk, mlflow"
 
 # diabetes_risk sxemasini yaratish
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname="diabetes_risk" <<-EOSQL
